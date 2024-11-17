@@ -24,7 +24,6 @@
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.GroupBox groupBoxOperations;
         private System.Windows.Forms.Button btnInvert;
-        private System.Windows.Forms.Button btnGrayscale;
         private System.Windows.Forms.Button btnHistogramEqualization;
         private System.Windows.Forms.ComboBox cmbSharpenMethod;
         private System.Windows.Forms.Button btnSharpen;
@@ -72,8 +71,10 @@
             this.btnSharpen = new System.Windows.Forms.Button();
             this.cmbSharpenMethod = new System.Windows.Forms.ComboBox();
             this.btnHistogramEqualization = new System.Windows.Forms.Button();
-            this.btnGrayscale = new System.Windows.Forms.Button();
             this.btnInvert = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btn_export = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picProcessed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picOriginalHistogram)).BeginInit();
@@ -87,18 +88,20 @@
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(12, 12);
+            this.btnImport.BackColor = System.Drawing.SystemColors.Highlight;
+            this.btnImport.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnImport.Location = new System.Drawing.Point(581, 171);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(120, 35);
+            this.btnImport.Size = new System.Drawing.Size(120, 104);
             this.btnImport.TabIndex = 0;
-            this.btnImport.Text = "Import Image";
-            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Text = "Import \r\nImage";
+            this.btnImport.UseVisualStyleBackColor = false;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
             // picOriginal
             // 
             this.picOriginal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picOriginal.Location = new System.Drawing.Point(12, 60);
+            this.picOriginal.Location = new System.Drawing.Point(184, 69);
             this.picOriginal.Name = "picOriginal";
             this.picOriginal.Size = new System.Drawing.Size(380, 250);
             this.picOriginal.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -108,7 +111,7 @@
             // picProcessed
             // 
             this.picProcessed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picProcessed.Location = new System.Drawing.Point(408, 60);
+            this.picProcessed.Location = new System.Drawing.Point(719, 69);
             this.picProcessed.Name = "picProcessed";
             this.picProcessed.Size = new System.Drawing.Size(380, 250);
             this.picProcessed.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -118,20 +121,18 @@
             // picOriginalHistogram
             // 
             this.picOriginalHistogram.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picOriginalHistogram.Location = new System.Drawing.Point(12, 325);
+            this.picOriginalHistogram.Location = new System.Drawing.Point(184, 346);
             this.picOriginalHistogram.Name = "picOriginalHistogram";
             this.picOriginalHistogram.Size = new System.Drawing.Size(380, 150);
-            this.picOriginalHistogram.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Normal;
             this.picOriginalHistogram.TabIndex = 3;
             this.picOriginalHistogram.TabStop = false;
             // 
             // picProcessedHistogram
             // 
             this.picProcessedHistogram.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picProcessedHistogram.Location = new System.Drawing.Point(408, 325);
+            this.picProcessedHistogram.Location = new System.Drawing.Point(719, 346);
             this.picProcessedHistogram.Name = "picProcessedHistogram";
             this.picProcessedHistogram.Size = new System.Drawing.Size(380, 150);
-            this.picProcessedHistogram.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Normal;
             this.picProcessedHistogram.TabIndex = 4;
             this.picProcessedHistogram.TabStop = false;
             // 
@@ -148,9 +149,9 @@
             this.groupBoxAdjustments.Controls.Add(this.lblBrightness);
             this.groupBoxAdjustments.Controls.Add(this.btnApply);
             this.groupBoxAdjustments.Controls.Add(this.btnReset);
-            this.groupBoxAdjustments.Location = new System.Drawing.Point(12, 490);
+            this.groupBoxAdjustments.Location = new System.Drawing.Point(284, 557);
             this.groupBoxAdjustments.Name = "groupBoxAdjustments";
-            this.groupBoxAdjustments.Size = new System.Drawing.Size(776, 150);
+            this.groupBoxAdjustments.Size = new System.Drawing.Size(776, 137);
             this.groupBoxAdjustments.TabIndex = 5;
             this.groupBoxAdjustments.TabStop = false;
             this.groupBoxAdjustments.Text = "Adjustments";
@@ -160,7 +161,7 @@
             this.lblGrayscaleValue.AutoSize = true;
             this.lblGrayscaleValue.Location = new System.Drawing.Point(420, 105);
             this.lblGrayscaleValue.Name = "lblGrayscaleValue";
-            this.lblGrayscaleValue.Size = new System.Drawing.Size(16, 17);
+            this.lblGrayscaleValue.Size = new System.Drawing.Size(14, 16);
             this.lblGrayscaleValue.TabIndex = 9;
             this.lblGrayscaleValue.Text = "0";
             // 
@@ -169,20 +170,18 @@
             this.lblGrayscale.AutoSize = true;
             this.lblGrayscale.Location = new System.Drawing.Point(20, 105);
             this.lblGrayscale.Name = "lblGrayscale";
-            this.lblGrayscale.Size = new System.Drawing.Size(73, 17);
+            this.lblGrayscale.Size = new System.Drawing.Size(69, 16);
             this.lblGrayscale.TabIndex = 8;
             this.lblGrayscale.Text = "Grayscale";
             // 
             // tbGrayscale
             // 
             this.tbGrayscale.Location = new System.Drawing.Point(100, 95);
-            this.tbGrayscale.Minimum = 0;
             this.tbGrayscale.Maximum = 100;
-            this.tbGrayscale.Value = 0;
-            this.tbGrayscale.TickFrequency = 10;
             this.tbGrayscale.Name = "tbGrayscale";
             this.tbGrayscale.Size = new System.Drawing.Size(300, 56);
             this.tbGrayscale.TabIndex = 7;
+            this.tbGrayscale.TickFrequency = 10;
             this.tbGrayscale.Scroll += new System.EventHandler(this.tbGrayscale_Scroll);
             // 
             // lblContrastValue
@@ -190,7 +189,7 @@
             this.lblContrastValue.AutoSize = true;
             this.lblContrastValue.Location = new System.Drawing.Point(420, 70);
             this.lblContrastValue.Name = "lblContrastValue";
-            this.lblContrastValue.Size = new System.Drawing.Size(34, 17);
+            this.lblContrastValue.Size = new System.Drawing.Size(28, 16);
             this.lblContrastValue.TabIndex = 6;
             this.lblContrastValue.Text = "100";
             // 
@@ -199,32 +198,30 @@
             this.lblBrightnessValue.AutoSize = true;
             this.lblBrightnessValue.Location = new System.Drawing.Point(420, 35);
             this.lblBrightnessValue.Name = "lblBrightnessValue";
-            this.lblBrightnessValue.Size = new System.Drawing.Size(16, 17);
+            this.lblBrightnessValue.Size = new System.Drawing.Size(14, 16);
             this.lblBrightnessValue.TabIndex = 5;
             this.lblBrightnessValue.Text = "0";
             // 
             // tbContrast
             // 
             this.tbContrast.Location = new System.Drawing.Point(100, 60);
-            this.tbContrast.Minimum = 0;
             this.tbContrast.Maximum = 200;
-            this.tbContrast.Value = 100;
-            this.tbContrast.TickFrequency = 20;
             this.tbContrast.Name = "tbContrast";
             this.tbContrast.Size = new System.Drawing.Size(300, 56);
             this.tbContrast.TabIndex = 4;
+            this.tbContrast.TickFrequency = 20;
+            this.tbContrast.Value = 100;
             this.tbContrast.Scroll += new System.EventHandler(this.tbContrast_Scroll);
             // 
             // tbBrightness
             // 
             this.tbBrightness.Location = new System.Drawing.Point(100, 25);
-            this.tbBrightness.Minimum = -100;
             this.tbBrightness.Maximum = 100;
-            this.tbBrightness.Value = 0;
-            this.tbBrightness.TickFrequency = 20;
+            this.tbBrightness.Minimum = -100;
             this.tbBrightness.Name = "tbBrightness";
             this.tbBrightness.Size = new System.Drawing.Size(300, 56);
             this.tbBrightness.TabIndex = 1;
+            this.tbBrightness.TickFrequency = 20;
             this.tbBrightness.Scroll += new System.EventHandler(this.tbBrightness_Scroll);
             // 
             // lblContrast
@@ -232,7 +229,7 @@
             this.lblContrast.AutoSize = true;
             this.lblContrast.Location = new System.Drawing.Point(20, 70);
             this.lblContrast.Name = "lblContrast";
-            this.lblContrast.Size = new System.Drawing.Size(57, 17);
+            this.lblContrast.Size = new System.Drawing.Size(56, 16);
             this.lblContrast.TabIndex = 3;
             this.lblContrast.Text = "Contrast";
             // 
@@ -241,28 +238,32 @@
             this.lblBrightness.AutoSize = true;
             this.lblBrightness.Location = new System.Drawing.Point(20, 35);
             this.lblBrightness.Name = "lblBrightness";
-            this.lblBrightness.Size = new System.Drawing.Size(63, 17);
+            this.lblBrightness.Size = new System.Drawing.Size(70, 16);
             this.lblBrightness.TabIndex = 0;
             this.lblBrightness.Text = "Brightness";
             // 
             // btnApply
             // 
+            this.btnApply.BackColor = System.Drawing.Color.GreenYellow;
+            this.btnApply.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnApply.Location = new System.Drawing.Point(500, 25);
             this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(100, 30);
+            this.btnApply.Size = new System.Drawing.Size(110, 34);
             this.btnApply.TabIndex = 10;
             this.btnApply.Text = "Apply";
-            this.btnApply.UseVisualStyleBackColor = true;
+            this.btnApply.UseVisualStyleBackColor = false;
             this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
             // btnReset
             // 
+            this.btnReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.btnReset.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnReset.Location = new System.Drawing.Point(500, 65);
             this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(100, 30);
+            this.btnReset.Size = new System.Drawing.Size(110, 37);
             this.btnReset.TabIndex = 11;
             this.btnReset.Text = "Reset";
-            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.UseVisualStyleBackColor = false;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // groupBoxOperations
@@ -274,11 +275,11 @@
             this.groupBoxOperations.Controls.Add(this.btnSharpen);
             this.groupBoxOperations.Controls.Add(this.cmbSharpenMethod);
             this.groupBoxOperations.Controls.Add(this.btnHistogramEqualization);
-            this.groupBoxOperations.Controls.Add(this.btnGrayscale);
             this.groupBoxOperations.Controls.Add(this.btnInvert);
-            this.groupBoxOperations.Location = new System.Drawing.Point(12, 660);
+            this.groupBoxOperations.Location = new System.Drawing.Point(284, 706);
             this.groupBoxOperations.Name = "groupBoxOperations";
-            this.groupBoxOperations.Size = new System.Drawing.Size(776, 150);
+            this.groupBoxOperations.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxOperations.Size = new System.Drawing.Size(776, 138);
             this.groupBoxOperations.TabIndex = 6;
             this.groupBoxOperations.TabStop = false;
             this.groupBoxOperations.Text = "Image Processing Operations";
@@ -359,16 +360,6 @@
             this.btnHistogramEqualization.UseVisualStyleBackColor = true;
             this.btnHistogramEqualization.Click += new System.EventHandler(this.btnHistogramEqualization_Click);
             // 
-            // btnGrayscale
-            // 
-            this.btnGrayscale.Location = new System.Drawing.Point(120, 25);
-            this.btnGrayscale.Name = "btnGrayscale";
-            this.btnGrayscale.Size = new System.Drawing.Size(100, 30);
-            this.btnGrayscale.TabIndex = 1;
-            this.btnGrayscale.Text = "Grayscale";
-            this.btnGrayscale.UseVisualStyleBackColor = true;
-            this.btnGrayscale.Click += new System.EventHandler(this.btnGrayscale_Click);
-            // 
             // btnInvert
             // 
             this.btnInvert.Location = new System.Drawing.Point(10, 25);
@@ -379,9 +370,46 @@
             this.btnInvert.UseVisualStyleBackColor = true;
             this.btnInvert.Click += new System.EventHandler(this.btnInvert_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(307, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(144, 38);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Foto Asli\r\n";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(834, 19);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(164, 38);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Foto Hasil";
+            // 
+            // btn_export
+            // 
+            this.btn_export.BackColor = System.Drawing.SystemColors.Highlight;
+            this.btn_export.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_export.Location = new System.Drawing.Point(581, 322);
+            this.btn_export.Name = "btn_export";
+            this.btn_export.Size = new System.Drawing.Size(120, 104);
+            this.btn_export.TabIndex = 9;
+            this.btn_export.Text = "Export Image";
+            this.btn_export.UseMnemonic = false;
+            this.btn_export.UseVisualStyleBackColor = false;
+            this.btn_export.Click += new System.EventHandler(this.btn_export_Click);
+            // 
             // Form1
             // 
-            this.ClientSize = new System.Drawing.Size(800, 820);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(1283, 653);
+            this.Controls.Add(this.btn_export);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBoxOperations);
             this.Controls.Add(this.groupBoxAdjustments);
             this.Controls.Add(this.picProcessedHistogram);
@@ -390,7 +418,10 @@
             this.Controls.Add(this.picOriginal);
             this.Controls.Add(this.btnImport);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Tag = "";
             this.Text = "Digital Image Processing";
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picOriginal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picProcessed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picOriginalHistogram)).EndInit();
@@ -402,9 +433,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbBrightness)).EndInit();
             this.groupBoxOperations.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btn_export;
     }
 }

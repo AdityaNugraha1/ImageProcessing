@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ImageProcessing
@@ -9,7 +11,7 @@ namespace ImageProcessing
     {
         private Bitmap originalImage = null;
         private Bitmap processedImage = null;
-
+        private bool isInverted = false;
         private int cumulativeBrightness = 0; // -100 to 100
         private int cumulativeContrast = 100;  // 0 to 200
         private int cumulativeGrayscale = 0;   // 0 to 100
@@ -59,12 +61,17 @@ namespace ImageProcessing
                 return;
             }
 
+            Bitmap temp = new Bitmap(processedImage);
             processedImage?.Dispose();
-            processedImage = AdjustBrightnessContrastGrayscale(originalImage, cumulativeBrightness, cumulativeContrast, cumulativeGrayscale);
+
+            processedImage = AdjustBrightnessContrastGrayscale(temp, cumulativeBrightness, cumulativeContrast, cumulativeGrayscale);
+            temp.Dispose(); 
+
             picProcessed.Image = processedImage;
 
             GenerateHistogram(processedImage, picProcessedHistogram);
         }
+
 
         private void btnReset_Click(object sender, EventArgs e)
         {
@@ -130,7 +137,7 @@ namespace ImageProcessing
         {
             Bitmap adjusted = new Bitmap(bmp.Width, bmp.Height);
 
-            double contrastFactor = contrast / 100.0; 
+            double contrastFactor = contrast / 100.0;
 
             double brightnessFactor = brightness;
 
@@ -191,7 +198,9 @@ namespace ImageProcessing
 
         private void GenerateHistogram(Bitmap bmp, PictureBox pictureBox)
         {
-            int[] grayHistogram = new int[256];
+            int[] rHistogram = new int[256];
+            int[] gHistogram = new int[256];
+            int[] bHistogram = new int[256];
 
             Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
             BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -202,40 +211,32 @@ namespace ImageProcessing
             System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
             bmp.UnlockBits(bmpData);
 
-            for (int y = 0; y < bmp.Height; y++)
+            for (int i = 0; i < bytes; i += 3)
             {
-                int row = y * stride;
-                for (int x = 0; x < bmp.Width; x++)
-                {
-                    int idx = row + x * 3;
-                    byte b = rgbValues[idx];
-                    byte g = rgbValues[idx + 1];
-                    byte r = rgbValues[idx + 2];
-                    int gray = (int)(r * 0.3 + g * 0.59 + b * 0.11);
-                    grayHistogram[gray]++;
-                }
+                bHistogram[rgbValues[i]]++;
+                gHistogram[rgbValues[i + 1]]++;
+                rHistogram[rgbValues[i + 2]]++;
             }
 
-            int histogramWidth = 256;
-            int histogramHeight = 100;
+            int histogramHeight = pictureBox.Height;
+            int histogramWidth = pictureBox.Width;
             Bitmap histogramBitmap = new Bitmap(histogramWidth, histogramHeight);
             using (Graphics g = Graphics.FromImage(histogramBitmap))
             {
                 g.Clear(Color.White);
+                int max = Math.Max(Math.Max(rHistogram.Max(), gHistogram.Max()), bHistogram.Max());
 
-                int max = 0;
-                foreach (int val in grayHistogram)
-                {
-                    if (val > max)
-                        max = val;
-                }
-
-                float scale = max > 0 ? (float)histogramHeight / max : 1;
+                float scale = max > 0 ? (float)histogramHeight / max : 0;
 
                 for (int i = 0; i < 256; i++)
                 {
-                    int barHeight = (int)(grayHistogram[i] * scale);
-                    g.DrawLine(Pens.Black, i, histogramHeight, i, histogramHeight - barHeight);
+                    int rBarHeight = (int)(rHistogram[i] * scale);
+                    int gBarHeight = (int)(gHistogram[i] * scale);
+                    int bBarHeight = (int)(bHistogram[i] * scale);
+
+                    g.DrawLine(Pens.Red, i, histogramHeight, i, histogramHeight - rBarHeight);
+                    g.DrawLine(Pens.Green, i, histogramHeight - rBarHeight, i, histogramHeight - rBarHeight - gBarHeight);
+                    g.DrawLine(Pens.Blue, i, histogramHeight - rBarHeight - gBarHeight, i, histogramHeight - rBarHeight - gBarHeight - bBarHeight);
                 }
             }
 
@@ -245,17 +246,21 @@ namespace ImageProcessing
 
         private void btnInvert_Click(object sender, EventArgs e)
         {
-            if (processedImage == null)
+            if (originalImage == null)
             {
-                MessageBox.Show("Please import and process an image first.");
+                MessageBox.Show("Please import an image first.");
                 return;
             }
 
-            Bitmap inverted = InvertImage(processedImage);
-            picProcessed.Image = inverted;
+            isInverted = !isInverted; 
+            processedImage = InvertImage(processedImage); 
 
-            GenerateHistogram(inverted, picProcessedHistogram);
+            picProcessed.Image = processedImage;
+
+            GenerateHistogram(processedImage, picProcessedHistogram);
         }
+
+
 
         private Bitmap InvertImage(Bitmap bmp)
         {
@@ -282,6 +287,7 @@ namespace ImageProcessing
 
             return inverted;
         }
+
 
         private void btnGrayscale_Click(object sender, EventArgs e)
         {
@@ -345,7 +351,7 @@ namespace ImageProcessing
             {
                 cdf[i] = cdf[i - 1] + histogram[i];
             }
-            
+
             for (int i = 0; i < 256; i++)
             {
                 cdf[i] = cdf[i] / cdf[255];
@@ -411,7 +417,7 @@ namespace ImageProcessing
             processedImage?.Dispose();
             processedImage = sharpened;
             picProcessed.Image = processedImage;
-            
+
             GenerateHistogram(sharpened, picProcessedHistogram);
         }
 
@@ -701,18 +707,69 @@ namespace ImageProcessing
                 return;
             }
 
-            Bitmap denoised = DenoiseImage(processedImage);
+            Bitmap denoised = ApplyMedianDenoise(processedImage);
             processedImage?.Dispose();
             processedImage = denoised;
-            picProcessed.Image = denoised;
+            picProcessed.Image = processedImage;
 
             GenerateHistogram(denoised, picProcessedHistogram);
         }
 
-        private Bitmap DenoiseImage(Bitmap bmp)
+        private Bitmap ApplyMedianDenoise(Bitmap bmp)
         {
-            return ApplyMedianSharpen(bmp);
+            Bitmap denoised = new Bitmap(bmp.Width, bmp.Height);
+
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            BitmapData bmpDataOriginal = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData bmpDataDenoised = denoised.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = bmpDataOriginal.Stride;
+            int bytes = Math.Abs(stride) * bmp.Height;
+            byte[] rgbValues = new byte[bytes];
+            byte[] rgbDenoised = new byte[bytes];
+
+            System.Runtime.InteropServices.Marshal.Copy(bmpDataOriginal.Scan0, rgbValues, 0, bytes);
+            bmp.UnlockBits(bmpDataOriginal);
+
+            int filterSize = 3; // Ukuran filter median
+            int edgeOffset = filterSize / 2; // Untuk menghindari akses pixel di luar batas
+
+            for (int y = edgeOffset; y < bmp.Height - edgeOffset; y++)
+            {
+                for (int x = edgeOffset; x < bmp.Width - edgeOffset; x++)
+                {
+                    List<byte> neighborsR = new List<byte>();
+                    List<byte> neighborsG = new List<byte>();
+                    List<byte> neighborsB = new List<byte>();
+
+                    for (int dy = -edgeOffset; dy <= edgeOffset; dy++)
+                    {
+                        for (int dx = -edgeOffset; dx <= edgeOffset; dx++)
+                        {
+                            int pixelIndex = (y + dy) * stride + (x + dx) * 3;
+                            neighborsB.Add(rgbValues[pixelIndex]);
+                            neighborsG.Add(rgbValues[pixelIndex + 1]);
+                            neighborsR.Add(rgbValues[pixelIndex + 2]);
+                        }
+                    }
+
+                    neighborsR.Sort();
+                    neighborsG.Sort();
+                    neighborsB.Sort();
+
+                    int medianIndex = neighborsR.Count / 2;
+                    rgbDenoised[y * stride + x * 3] = neighborsB[medianIndex];
+                    rgbDenoised[y * stride + x * 3 + 1] = neighborsG[medianIndex];
+                    rgbDenoised[y * stride + x * 3 + 2] = neighborsR[medianIndex];
+                }
+            }
+
+            System.Runtime.InteropServices.Marshal.Copy(rgbDenoised, 0, bmpDataDenoised.Scan0, bytes);
+            denoised.UnlockBits(bmpDataDenoised);
+
+            return denoised;
         }
+
 
         private void btnBlur_Click(object sender, EventArgs e)
         {
@@ -917,6 +974,40 @@ namespace ImageProcessing
             grayscale.UnlockBits(bmpDataGrayscale);
 
             return grayscale;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void btn_export_Click(object sender, EventArgs e)
+        {
+            if (processedImage == null)
+            {
+                MessageBox.Show("No processed image to export.", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Title = "Export Processed Image";
+                saveFileDialog.Filter = "PNG Image|*.png";
+                saveFileDialog.DefaultExt = "png";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Save the Image as PNG with default settings
+                        processedImage.Save(saveFileDialog.FileName, ImageFormat.Png);
+                        MessageBox.Show("Image exported successfully!", "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to export image. Error: {ex.Message}", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
     }
 }
