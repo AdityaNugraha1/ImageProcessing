@@ -61,12 +61,13 @@ namespace ImageProcessing
                 return;
             }
 
-            Bitmap temp = new Bitmap(processedImage);
-            processedImage?.Dispose();
+            //processedImage?.Dispose();
+            processedImage = AdjustBrightnessContrastGrayscale(originalImage, cumulativeBrightness, cumulativeContrast, cumulativeGrayscale);
 
-            processedImage = AdjustBrightnessContrastGrayscale(temp, cumulativeBrightness, cumulativeContrast, cumulativeGrayscale);
-            temp.Dispose(); 
-
+            if (isInverted)
+            {
+                processedImage = InvertImage(processedImage);
+            }
             picProcessed.Image = processedImage;
 
             GenerateHistogram(processedImage, picProcessedHistogram);
@@ -110,6 +111,7 @@ namespace ImageProcessing
             lblBrightnessValue.Text = "0";
             lblContrastValue.Text = "100";
             lblGrayscaleValue.Text = "0";
+            isInverted = false;
         }
 
         private void tbBrightness_Scroll(object sender, EventArgs e)
@@ -246,16 +248,16 @@ namespace ImageProcessing
 
         private void btnInvert_Click(object sender, EventArgs e)
         {
-            if (originalImage == null)
+            if (processedImage == null)
             {
-                MessageBox.Show("Please import an image first.");
+                MessageBox.Show("Please import and process an image first.");
                 return;
             }
 
-            isInverted = !isInverted; 
-            processedImage = InvertImage(processedImage); 
-
-            picProcessed.Image = processedImage;
+            // Invert the current state of the processed image.
+            processedImage = InvertImage(processedImage);
+            picProcessed.Image = processedImage; // Update the picture box to reflect the change.
+            isInverted = !isInverted;
 
             GenerateHistogram(processedImage, picProcessedHistogram);
         }
