@@ -237,12 +237,12 @@ namespace ImageProcessing
 
             for (int i = 0; i < rgbValues.Length; i += 3)
             {
-                //int b = (int)((rgbValues[i] - 128) * contrastFactor + 128 + brightnessFactor);
-                //int g = (int)((rgbValues[i + 1] - 128) * contrastFactor + 128 + brightnessFactor);
-                //int r = (int)((rgbValues[i + 2] - 128) * contrastFactor + 128 + brightnessFactor);
-                int b = (int)(rgbValues[i] + brightnessFactor);
-                int g = (int)(rgbValues[i + 1] + brightnessFactor);
-                int r = (int)(rgbValues[i + 2] + brightnessFactor);
+                int b = (int)((rgbValues[i] - 128) * contrastFactor + 128 + brightnessFactor);
+                int g = (int)((rgbValues[i + 1] - 128) * contrastFactor + 128 + brightnessFactor);
+                int r = (int)((rgbValues[i + 2] - 128) * contrastFactor + 128 + brightnessFactor);
+                //int b = (int)(rgbValues[i] + brightnessFactor);
+                //int g = (int)(rgbValues[i + 1] + brightnessFactor);
+                //int r = (int)(rgbValues[i + 2] + brightnessFactor);
 
                 b = Clamp(b);
                 g = Clamp(g);
