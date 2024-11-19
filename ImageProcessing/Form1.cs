@@ -839,9 +839,9 @@ namespace ImageProcessing
             System.Runtime.InteropServices.Marshal.Copy(bmpDataOriginal.Scan0, rgbValues, 0, bytes);
             bmp.UnlockBits(bmpDataOriginal);
 
-            for (int y = kOffsetY; y < height - kOffsetY; y++)
+            for (int y = 0; y < height; y++)
             {
-                for (int x = kOffsetX; x < width - kOffsetX; x++)
+                for (int x = 0; x < width; x++)
                 {
                     double sumR = 0;
                     double sumG = 0;
@@ -851,8 +851,8 @@ namespace ImageProcessing
                     {
                         for (int kx = -kOffsetX; kx <= kOffsetX; kx++)
                         {
-                            int pixelY = y + ky;
-                            int pixelX = x + kx;
+                            int pixelY = Math.Max(0, Math.Min(height - 1, y + ky));
+                            int pixelX = Math.Max(0, Math.Min(width - 1, x + kx));
                             int idx = pixelY * stride + pixelX * 3;
 
                             double kernelValue = kernel[ky + kOffsetY, kx + kOffsetX];
@@ -869,25 +869,12 @@ namespace ImageProcessing
                 }
             }
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if (y < kOffsetY || y >= height - kOffsetY || x < kOffsetX || x >= width - kOffsetX)
-                    {
-                        int idx = y * stride + x * 3;
-                        rgbOutput[idx] = rgbValues[idx];
-                        rgbOutput[idx + 1] = rgbValues[idx + 1];
-                        rgbOutput[idx + 2] = rgbValues[idx + 2];
-                    }
-                }
-            }
-
             System.Runtime.InteropServices.Marshal.Copy(rgbOutput, 0, bmpDataOutput.Scan0, bytes);
             output.UnlockBits(bmpDataOutput);
 
             return output;
         }
+
 
         private void btnEdgeDetection_Click(object sender, EventArgs e)
         {
