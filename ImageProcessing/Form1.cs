@@ -596,7 +596,13 @@ namespace ImageProcessing
                 return;
             }
 
-            //MessageBox.Show("Please import and process an image first.");
+            DialogResult result = MessageBox.Show("Pengaturan sebelumnya akan ter-reset!", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            // Check if the user pressed "No"
+            if (result == DialogResult.No)
+            {
+                return;
+            }
 
             Bitmap equalized = HistogramEqualization(originalImage);
             processedImage?.Dispose();
@@ -881,6 +887,13 @@ namespace ImageProcessing
             if (processedImage == null)
             {
                 MessageBox.Show("Please import and process an image first.");
+                return;
+            }
+            DialogResult result = MessageBox.Show("Pengaturan sebelumnya akan ter-reset!", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            // Check if the user pressed "No"
+            if (result == DialogResult.No)
+            {
                 return;
             }
 
