@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
@@ -12,6 +13,13 @@ namespace ImageProcessing
         private Bitmap originalImage = null;
         private Bitmap processedImage = null;
         private bool isInverted = false;
+        private int sharpenGaussCounter = 0;
+        private int sharpenAverageCounter = 0;
+        private int sharpenMedianCounter = 0;
+        private int blurGaussCounter = 0;
+        private int blurAverageCounter = 0;
+        private int blurMedianCounter = 0;
+        private int denoiseCounter = 0;
         private int cumulativeBrightness = 0; // -100 to 100
         private int cumulativeContrast = 100;  // 0 to 200
         private int cumulativeGrayscale = 0;   // 0 to 100
@@ -68,6 +76,71 @@ namespace ImageProcessing
             {
                 processedImage = InvertImage(processedImage);
             }
+
+            if (sharpenGaussCounter > 0 || sharpenAverageCounter > 0 || sharpenMedianCounter > 0)
+            {
+                SharpenType selectedType = new SharpenType();
+                if (sharpenGaussCounter > 0)
+                {
+                    for(int i = 0; i < sharpenGaussCounter; i++)
+                    {
+                        selectedType = SharpenType.Gaussian;
+                        processedImage = SharpenImage(processedImage, selectedType);
+                    }
+                }
+                if (sharpenAverageCounter > 0)
+                {
+                    for (int i = 0; i < sharpenAverageCounter; i++)
+                    {
+                        selectedType = SharpenType.Average;
+                        processedImage = SharpenImage(processedImage, selectedType);
+                    }
+                }
+                if (sharpenMedianCounter > 0)
+                {
+                    for (int i = 0; i < sharpenMedianCounter; i++)
+                    {
+                        selectedType = SharpenType.Median;
+                        processedImage = SharpenImage(processedImage, selectedType);
+                    }
+                }
+            }
+            if (blurMedianCounter > 0 || blurGaussCounter > 0 || blurAverageCounter > 0)
+            {
+                BlurType selectedType = new BlurType();
+
+                if (blurMedianCounter > 0)
+                {
+                    for (int i = 0; i < blurMedianCounter; i++)
+                    {
+                        selectedType = BlurType.Median;
+                        processedImage = BlurImage(processedImage, selectedType);
+                    }
+                }
+                if (blurGaussCounter > 0)
+                {
+                    for (int i = 0; i < blurGaussCounter; i++)
+                    {
+                        selectedType = BlurType.Gaussian;
+                        processedImage = BlurImage(processedImage, selectedType);
+                    }
+                }
+                if (blurAverageCounter > 0)
+                {
+                    for (int i = 0; i < blurAverageCounter; i++)
+                    {
+                        selectedType = BlurType.Average;
+                        processedImage = BlurImage(processedImage, selectedType);
+                    }
+                }
+            }
+            if (denoiseCounter > 0)
+            {
+                for (int i = 0; i < denoiseCounter; i++)
+                {
+                    processedImage = ApplyMedianDenoise(processedImage);
+                }
+            }
             picProcessed.Image = processedImage;
 
             GenerateHistogram(processedImage, picProcessedHistogram);
@@ -112,7 +185,15 @@ namespace ImageProcessing
             lblContrastValue.Text = "100";
             lblGrayscaleValue.Text = "0";
             isInverted = false;
-        }
+
+            sharpenGaussCounter = 0;
+            sharpenAverageCounter = 0;
+            sharpenMedianCounter = 0;
+            blurGaussCounter = 0;
+            blurAverageCounter = 0;
+            blurMedianCounter = 0;
+            denoiseCounter = 0;
+    }
 
         private void tbBrightness_Scroll(object sender, EventArgs e)
         {
@@ -156,9 +237,12 @@ namespace ImageProcessing
 
             for (int i = 0; i < rgbValues.Length; i += 3)
             {
-                int b = (int)((rgbValues[i] - 128) * contrastFactor + 128 + brightnessFactor);
-                int g = (int)((rgbValues[i + 1] - 128) * contrastFactor + 128 + brightnessFactor);
-                int r = (int)((rgbValues[i + 2] - 128) * contrastFactor + 128 + brightnessFactor);
+                //int b = (int)((rgbValues[i] - 128) * contrastFactor + 128 + brightnessFactor);
+                //int g = (int)((rgbValues[i + 1] - 128) * contrastFactor + 128 + brightnessFactor);
+                //int r = (int)((rgbValues[i + 2] - 128) * contrastFactor + 128 + brightnessFactor);
+                int b = (int)(rgbValues[i] + brightnessFactor);
+                int g = (int)(rgbValues[i + 1] + brightnessFactor);
+                int r = (int)(rgbValues[i + 2] + brightnessFactor);
 
                 b = Clamp(b);
                 g = Clamp(g);
@@ -198,6 +282,161 @@ namespace ImageProcessing
             return value;
         }
 
+        //private void GenerateHistogram(Bitmap bmp, PictureBox pictureBox)
+        //{
+        //    int[] redHistogram = new int[256];
+        //    int[] greenHistogram = new int[256];
+        //    int[] blueHistogram = new int[256];
+        //    int[] grayHistogram = new int[256];
+
+        //    Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+        //    BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+        //    int stride = bmpData.Stride;
+        //    int bytes = Math.Abs(stride) * bmp.Height;
+        //    byte[] rgbValues = new byte[bytes];
+        //    System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
+        //    bmp.UnlockBits(bmpData);
+
+        //    // Hitung histogram untuk setiap channel
+        //    for (int y = 0; y < bmp.Height; y++)
+        //    {
+        //        int row = y * stride;
+        //        for (int x = 0; x < bmp.Width; x++)
+        //        {
+        //            int idx = row + x * 3;
+        //            byte b = rgbValues[idx];
+        //            byte g = rgbValues[idx + 1];
+        //            byte r = rgbValues[idx + 2];
+
+        //            redHistogram[r]++;
+        //            greenHistogram[g]++;
+        //            blueHistogram[b]++;
+
+        //            int gray = (int)(r * 0.3 + g * 0.59 + b * 0.11);
+        //            grayHistogram[gray]++;
+        //        }
+        //    }
+
+        //    // Sesuaikan ukuran histogram dengan PictureBox
+        //    int histogramWidth = pictureBox.Width;
+        //    int histogramHeight = pictureBox.Height;
+        //    Bitmap histogramBitmap = new Bitmap(histogramWidth, histogramHeight);
+        //    using (Graphics g = Graphics.FromImage(histogramBitmap))
+        //    {
+        //        // Background putih
+        //        g.Clear(Color.White);
+
+        //        // Cari nilai maksimum di semua histogram untuk skala
+        //        int maxRed = redHistogram.Max();
+        //        int maxGreen = greenHistogram.Max();
+        //        int maxBlue = blueHistogram.Max();
+        //        int maxGray = grayHistogram.Max();
+        //        int max = Math.Max(Math.Max(maxRed, maxGreen), Math.Max(maxBlue, maxGray));
+
+        //        float scaleX = (float)histogramWidth / 256; // Skala untuk rentang penuh 0-255
+        //        float scaleY = max > 0 ? (float)histogramHeight / max : 1; // Skala vertikal
+
+        //        // Helper function untuk menggambar histogram dengan area terisi
+        //        void DrawChannelFilled(int[] histogram, Color color)
+        //        {
+        //            using (GraphicsPath path = new GraphicsPath())
+        //            {
+        //                path.AddLine(0, histogramHeight, 0, histogramHeight - (int)(histogram[0] * scaleY));
+        //                for (int i = 1; i < 256; i++)
+        //                {
+        //                    path.AddLine((i - 1) * scaleX, histogramHeight - (int)(histogram[i - 1] * scaleY), i * scaleX, histogramHeight - (int)(histogram[i] * scaleY));
+        //                }
+        //                path.AddLine(255 * scaleX, histogramHeight - (int)(histogram[255] * scaleY), 255 * scaleX, histogramHeight);
+        //                path.CloseFigure();
+
+        //                using (SolidBrush brush = new SolidBrush(Color.FromArgb(100, color)))
+        //                {
+        //                    g.FillPath(brush, path);
+        //                }
+        //                using (Pen pen = new Pen(color, 1.5f))
+        //                {
+        //                    g.DrawPath(pen, path);
+        //                }
+        //            }
+        //        }
+
+        //        // Gambar setiap channel
+        //        DrawChannelFilled(grayHistogram, Color.Gray);   // Gray level
+        //        DrawChannelFilled(redHistogram, Color.Red);     // Red channel
+        //        DrawChannelFilled(greenHistogram, Color.Green); // Green channel
+        //        DrawChannelFilled(blueHistogram, Color.Blue);   // Blue channel
+
+        //        // Gambar border kotak histogram
+        //        g.DrawRectangle(Pens.Black, 0, 0, histogramWidth - 1, histogramHeight - 1);
+        //    }
+
+        //    // Tampilkan histogram pada PictureBox
+        //    pictureBox.SizeMode = PictureBoxSizeMode.StretchImage; // Pastikan gambar sesuai ukuran PictureBox
+        //    pictureBox.Image?.Dispose();
+        //    pictureBox.Image = histogramBitmap;
+        //}
+
+        //private void GenerateHistogram(Bitmap bmp, PictureBox pictureBox)
+        //{
+        //    int[] rHistogram = new int[256];
+        //    int[] gHistogram = new int[256];
+        //    int[] bHistogram = new int[256];
+
+        //    Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+        //    BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+        //    int stride = bmpData.Stride;
+        //    int bytes = Math.Abs(stride) * bmp.Height;
+        //    byte[] rgbValues = new byte[bytes];
+        //    System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
+        //    bmp.UnlockBits(bmpData);
+
+        //    // Populate histograms
+        //    for (int i = 0; i < bytes; i += 3)
+        //    {
+        //        bHistogram[rgbValues[i]]++;
+        //        gHistogram[rgbValues[i + 1]]++;
+        //        rHistogram[rgbValues[i + 2]]++;
+        //    }
+
+        //    int histogramHeight = pictureBox.Height;
+        //    int histogramWidth = pictureBox.Width;
+
+        //    Bitmap histogramBitmap = new Bitmap(histogramWidth, histogramHeight);
+        //    using (Graphics g = Graphics.FromImage(histogramBitmap))
+        //    {
+        //        g.Clear(Color.White);
+        //        int max = Math.Max(Math.Max(rHistogram.Max(), gHistogram.Max()), bHistogram.Max());
+
+        //        float scale = max > 0 ? (float)histogramHeight / max : 0;
+
+        //        // Red Histogram
+        //        for (int i = 0; i < 256; i++)
+        //        {
+        //            int rBarHeight = (int)(rHistogram[i] * scale);
+        //            g.DrawLine(Pens.Red, i, histogramHeight, i, histogramHeight - rBarHeight);
+        //        }
+
+        //        // Green Histogram
+        //        for (int i = 0; i < 256; i++)
+        //        {
+        //            int gBarHeight = (int)(gHistogram[i] * scale);
+        //            g.DrawLine(Pens.Green, i, histogramHeight, i, histogramHeight - gBarHeight);
+        //        }
+
+        //        // Blue Histogram
+        //        for (int i = 0; i < 256; i++)
+        //        {
+        //            int bBarHeight = (int)(bHistogram[i] * scale);
+        //            g.DrawLine(Pens.Blue, i, histogramHeight, i, histogramHeight - bBarHeight);
+        //        }
+        //    }
+
+        //    pictureBox.Image?.Dispose();
+        //    pictureBox.Image = histogramBitmap;
+        //}
+
         private void GenerateHistogram(Bitmap bmp, PictureBox pictureBox)
         {
             int[] rHistogram = new int[256];
@@ -213,32 +452,72 @@ namespace ImageProcessing
             System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, rgbValues, 0, bytes);
             bmp.UnlockBits(bmpData);
 
+            // Populate histograms
             for (int i = 0; i < bytes; i += 3)
             {
-                bHistogram[rgbValues[i]]++;
-                gHistogram[rgbValues[i + 1]]++;
-                rHistogram[rgbValues[i + 2]]++;
+                int b = rgbValues[i];
+                int g = rgbValues[i + 1];
+                int r = rgbValues[i + 2];
+
+                bHistogram[b]++;
+                gHistogram[g]++;
+                rHistogram[r]++;
+
             }
 
             int histogramHeight = pictureBox.Height;
             int histogramWidth = pictureBox.Width;
+
             Bitmap histogramBitmap = new Bitmap(histogramWidth, histogramHeight);
             using (Graphics g = Graphics.FromImage(histogramBitmap))
             {
                 g.Clear(Color.White);
-                int max = Math.Max(Math.Max(rHistogram.Max(), gHistogram.Max()), bHistogram.Max());
+                int max = Math.Max(
+                    Math.Max(rHistogram.Max(), gHistogram.Max()),
+                    bHistogram.Max()
+                );
 
-                float scale = max > 0 ? (float)histogramHeight / max : 0;
+                float scaleY = max > 0 ? (float)histogramHeight / max : 0;
+                float scaleX = (float)histogramWidth / 256; // Scale horizontally
+
+                // Define points for polygons
+                PointF[] rPoints = new PointF[258];
+                PointF[] gPoints = new PointF[258];
+                PointF[] bPoints = new PointF[258];
 
                 for (int i = 0; i < 256; i++)
                 {
-                    int rBarHeight = (int)(rHistogram[i] * scale);
-                    int gBarHeight = (int)(gHistogram[i] * scale);
-                    int bBarHeight = (int)(bHistogram[i] * scale);
+                    float x = i * scaleX;
+                    float rHeight = rHistogram[i] * scaleY;
+                    float gHeight = gHistogram[i] * scaleY;
+                    float bHeight = bHistogram[i] * scaleY;
 
-                    g.DrawLine(Pens.Red, i, histogramHeight, i, histogramHeight - rBarHeight);
-                    g.DrawLine(Pens.Green, i, histogramHeight - rBarHeight, i, histogramHeight - rBarHeight - gBarHeight);
-                    g.DrawLine(Pens.Blue, i, histogramHeight - rBarHeight - gBarHeight, i, histogramHeight - rBarHeight - gBarHeight - bBarHeight);
+                    rPoints[i] = new PointF(x, histogramHeight - rHeight);
+                    gPoints[i] = new PointF(x, histogramHeight - gHeight);
+                    bPoints[i] = new PointF(x, histogramHeight - bHeight);
+                }
+
+                // Close the polygons
+                rPoints[256] = new PointF(histogramWidth, histogramHeight); // Bottom-right corner
+                rPoints[257] = new PointF(0, histogramHeight);             // Bottom-left corner
+                gPoints[256] = new PointF(histogramWidth, histogramHeight);
+                gPoints[257] = new PointF(0, histogramHeight);
+                bPoints[256] = new PointF(histogramWidth, histogramHeight);
+                bPoints[257] = new PointF(0, histogramHeight);
+
+                // Fill with transparency and draw the outlines
+                using (Brush redBrush = new SolidBrush(Color.FromArgb(100, Color.Red)))
+                using (Brush greenBrush = new SolidBrush(Color.FromArgb(100, Color.Green)))
+                using (Brush blueBrush = new SolidBrush(Color.FromArgb(100, Color.Blue)))
+                {
+                    g.FillPolygon(redBrush, rPoints);
+                    g.DrawPolygon(Pens.Red, rPoints);
+
+                    g.FillPolygon(greenBrush, gPoints);
+                    g.DrawPolygon(Pens.Green, gPoints);
+
+                    g.FillPolygon(blueBrush, bPoints);
+                    g.DrawPolygon(Pens.Blue, bPoints);
                 }
             }
 
@@ -316,6 +595,8 @@ namespace ImageProcessing
                 MessageBox.Show("Please import and process an image first.");
                 return;
             }
+
+            //MessageBox.Show("Please import and process an image first.");
 
             Bitmap equalized = HistogramEqualization(originalImage);
             processedImage?.Dispose();
@@ -397,18 +678,21 @@ namespace ImageProcessing
                 return;
             }
 
-            SharpenType selectedType = SharpenType.Gaussian;
+            SharpenType selectedType = new SharpenType();
 
             switch (method)
             {
                 case "Gaussian":
                     selectedType = SharpenType.Gaussian;
+                    sharpenGaussCounter++;
                     break;
                 case "Average":
                     selectedType = SharpenType.Average;
+                    sharpenAverageCounter++;
                     break;
                 case "Median":
                     selectedType = SharpenType.Median;
+                    sharpenMedianCounter++;
                     break;
                 default:
                     MessageBox.Show("Unknown sharpening method selected.");
@@ -710,6 +994,7 @@ namespace ImageProcessing
             }
 
             Bitmap denoised = ApplyMedianDenoise(processedImage);
+            denoiseCounter++;
             processedImage?.Dispose();
             processedImage = denoised;
             picProcessed.Image = processedImage;
@@ -788,18 +1073,21 @@ namespace ImageProcessing
                 return;
             }
 
-            BlurType selectedType = BlurType.Gaussian;
+            BlurType selectedType = new BlurType();
 
             switch (method)
             {
                 case "Gaussian":
                     selectedType = BlurType.Gaussian;
+                    blurGaussCounter++;
                     break;
                 case "Average":
                     selectedType = BlurType.Average;
+                    blurMedianCounter++;
                     break;
                 case "Median":
                     selectedType = BlurType.Median;
+                    blurMedianCounter++;
                     break;
                 default:
                     MessageBox.Show("Unknown blurring method selected.");

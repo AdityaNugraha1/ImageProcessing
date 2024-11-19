@@ -161,7 +161,7 @@
             this.lblGrayscaleValue.AutoSize = true;
             this.lblGrayscaleValue.Location = new System.Drawing.Point(420, 105);
             this.lblGrayscaleValue.Name = "lblGrayscaleValue";
-            this.lblGrayscaleValue.Size = new System.Drawing.Size(14, 16);
+            this.lblGrayscaleValue.Size = new System.Drawing.Size(13, 13);
             this.lblGrayscaleValue.TabIndex = 9;
             this.lblGrayscaleValue.Text = "0";
             // 
@@ -170,7 +170,7 @@
             this.lblGrayscale.AutoSize = true;
             this.lblGrayscale.Location = new System.Drawing.Point(20, 105);
             this.lblGrayscale.Name = "lblGrayscale";
-            this.lblGrayscale.Size = new System.Drawing.Size(69, 16);
+            this.lblGrayscale.Size = new System.Drawing.Size(54, 13);
             this.lblGrayscale.TabIndex = 8;
             this.lblGrayscale.Text = "Grayscale";
             // 
@@ -179,7 +179,7 @@
             this.tbGrayscale.Location = new System.Drawing.Point(100, 95);
             this.tbGrayscale.Maximum = 100;
             this.tbGrayscale.Name = "tbGrayscale";
-            this.tbGrayscale.Size = new System.Drawing.Size(300, 56);
+            this.tbGrayscale.Size = new System.Drawing.Size(300, 45);
             this.tbGrayscale.TabIndex = 7;
             this.tbGrayscale.TickFrequency = 10;
             this.tbGrayscale.Scroll += new System.EventHandler(this.tbGrayscale_Scroll);
@@ -189,7 +189,7 @@
             this.lblContrastValue.AutoSize = true;
             this.lblContrastValue.Location = new System.Drawing.Point(420, 70);
             this.lblContrastValue.Name = "lblContrastValue";
-            this.lblContrastValue.Size = new System.Drawing.Size(28, 16);
+            this.lblContrastValue.Size = new System.Drawing.Size(25, 13);
             this.lblContrastValue.TabIndex = 6;
             this.lblContrastValue.Text = "100";
             // 
@@ -198,7 +198,7 @@
             this.lblBrightnessValue.AutoSize = true;
             this.lblBrightnessValue.Location = new System.Drawing.Point(420, 35);
             this.lblBrightnessValue.Name = "lblBrightnessValue";
-            this.lblBrightnessValue.Size = new System.Drawing.Size(14, 16);
+            this.lblBrightnessValue.Size = new System.Drawing.Size(13, 13);
             this.lblBrightnessValue.TabIndex = 5;
             this.lblBrightnessValue.Text = "0";
             // 
@@ -207,7 +207,7 @@
             this.tbContrast.Location = new System.Drawing.Point(100, 60);
             this.tbContrast.Maximum = 200;
             this.tbContrast.Name = "tbContrast";
-            this.tbContrast.Size = new System.Drawing.Size(300, 56);
+            this.tbContrast.Size = new System.Drawing.Size(300, 45);
             this.tbContrast.TabIndex = 4;
             this.tbContrast.TickFrequency = 20;
             this.tbContrast.Value = 100;
@@ -219,7 +219,7 @@
             this.tbBrightness.Maximum = 100;
             this.tbBrightness.Minimum = -100;
             this.tbBrightness.Name = "tbBrightness";
-            this.tbBrightness.Size = new System.Drawing.Size(300, 56);
+            this.tbBrightness.Size = new System.Drawing.Size(300, 45);
             this.tbBrightness.TabIndex = 1;
             this.tbBrightness.TickFrequency = 20;
             this.tbBrightness.Scroll += new System.EventHandler(this.tbBrightness_Scroll);
@@ -229,7 +229,7 @@
             this.lblContrast.AutoSize = true;
             this.lblContrast.Location = new System.Drawing.Point(20, 70);
             this.lblContrast.Name = "lblContrast";
-            this.lblContrast.Size = new System.Drawing.Size(56, 16);
+            this.lblContrast.Size = new System.Drawing.Size(46, 13);
             this.lblContrast.TabIndex = 3;
             this.lblContrast.Text = "Contrast";
             // 
@@ -238,7 +238,7 @@
             this.lblBrightness.AutoSize = true;
             this.lblBrightness.Location = new System.Drawing.Point(20, 35);
             this.lblBrightness.Name = "lblBrightness";
-            this.lblBrightness.Size = new System.Drawing.Size(70, 16);
+            this.lblBrightness.Size = new System.Drawing.Size(56, 13);
             this.lblBrightness.TabIndex = 0;
             this.lblBrightness.Text = "Brightness";
             // 
@@ -324,7 +324,7 @@
             "Median"});
             this.cmbBlurMethod.Location = new System.Drawing.Point(510, 105);
             this.cmbBlurMethod.Name = "cmbBlurMethod";
-            this.cmbBlurMethod.Size = new System.Drawing.Size(100, 24);
+            this.cmbBlurMethod.Size = new System.Drawing.Size(100, 21);
             this.cmbBlurMethod.TabIndex = 6;
             // 
             // btnSharpen
@@ -347,7 +347,7 @@
             "Median"});
             this.cmbSharpenMethod.Location = new System.Drawing.Point(510, 30);
             this.cmbSharpenMethod.Name = "cmbSharpenMethod";
-            this.cmbSharpenMethod.Size = new System.Drawing.Size(100, 24);
+            this.cmbSharpenMethod.Size = new System.Drawing.Size(100, 21);
             this.cmbSharpenMethod.TabIndex = 4;
             // 
             // btnHistogramEqualization
@@ -376,7 +376,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(307, 19);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(144, 38);
+            this.label1.Size = new System.Drawing.Size(120, 31);
             this.label1.TabIndex = 7;
             this.label1.Text = "Foto Asli\r\n";
             // 
@@ -386,7 +386,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(834, 19);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(164, 38);
+            this.label2.Size = new System.Drawing.Size(137, 31);
             this.label2.TabIndex = 8;
             this.label2.Text = "Foto Hasil";
             // 
@@ -406,7 +406,7 @@
             // Form1
             // 
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1283, 653);
+            this.ClientSize = new System.Drawing.Size(1283, 875);
             this.Controls.Add(this.btn_export);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
