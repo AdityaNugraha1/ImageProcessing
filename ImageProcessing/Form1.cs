@@ -5,6 +5,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
+using AForge.Video;
+using AForge.Video.DirectShow;
 
 namespace ImageProcessing
 {
@@ -20,9 +22,9 @@ namespace ImageProcessing
         private int blurAverageCounter = 0;
         private int blurMedianCounter = 0;
         private int denoiseCounter = 0;
-        private int cumulativeBrightness = 0; // -100 to 100
-        private int cumulativeContrast = 100;  // 0 to 200
-        private int cumulativeGrayscale = 0;   // 0 to 100
+        private int cumulativeBrightness = 0; 
+        private int cumulativeContrast = 100; 
+        private int cumulativeGrayscale = 0;  
 
         public Form1()
         {
@@ -69,7 +71,6 @@ namespace ImageProcessing
                 return;
             }
 
-            //processedImage?.Dispose();
             processedImage = AdjustBrightnessContrastGrayscale(originalImage, cumulativeBrightness, cumulativeContrast, cumulativeGrayscale);
 
             if (isInverted)
